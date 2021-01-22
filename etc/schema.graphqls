@@ -1,0 +1,115 @@
+type StoreConfig {
+    help_desk: HelpDeskConfiguration @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\HelpDeskConfiguration") @doc(description: "Help Desk configuration.")
+}
+
+type HelpDeskConfiguration {
+    enabled: Boolean! @doc(description: "Enable Module.")
+    enable_testmode: Boolean! @doc(description: "Enable Test Mode.")
+    email_receive: String @doc(description: "Email Receive.")
+    sender_email_identity: String @doc(description: "Sender Email Identity.")
+    new_ticket_template: String @doc(description: "New Ticket Template.")
+    new_message_template: String @doc(description: "New Message Template.")
+    status_ticket_template: String @doc(description: "Status Ticket Template.")
+    reminder_template: String @doc(description: "Reminder Template.")
+    assign_ticket_template: String @doc(description: "Assign Ticket Template.")
+    auto_close_ticket: String @doc(description: "Auto Close Ticket.")
+    auto_reminder_ticket: String @doc(description: "Auto Reminder Ticket.")
+    enable_chat: Boolean! @doc(description: "Enable Chat.")
+    text_label_chat: String @doc(description: "Text Label Chat.")
+    background_color_chat: String @doc(description: "Background Color Chat.")
+    store: String @doc(description: "Store.")
+}
+
+type Query {
+
+    LofHelpDeskTicketById (
+            ticket_id: String @doc(description: "Query by ticket_id.")
+    ) : Ticket @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Ticket") @doc(description: "Get Ticket by ID.")
+
+    LofHelpDeskTicketList(
+            search: String @doc(description: "Performs a full-text search using the specified key words."),
+            filter: TicketFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+            pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+            currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ) : Tickets @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\Tickets") @doc(description: "The tickets query searches for ticktets that match the criteria specified in the search and filter attributes")
+}
+
+type Mutation {
+  LofCreateTicket(input: TicketInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\CreateTicket") @doc(description: "Create a new pickup store")
+}
+
+type Tickets {
+    total_count: Int @doc(description: "The number of tickets returned")
+    items: [Ticket] @doc(description: "An array of tickets that match the specified search criteria")
+}
+
+input TicketInput {
+    category_id  : String  @doc(description: "category_id.")
+    product_id  : [String]  @doc(description: "product_id.")
+    subject  : String  @doc(description: "subject.")
+    description  : String  @doc(description: "description.")
+    priority_id  : String  @doc(description: "priority.")
+    order_id  : String  @doc(description: "order_id.")
+    attachment : String  @doc(description: "attachment.")
+    attachment_name : String  @doc(description: "attachment_name.")
+}
+
+type Ticket {
+
+    ticket_id  : String  @doc(description: "Query by ticket_id.")
+    code  : String  @doc(description: "Query by code.")
+    category_id  : String  @doc(description: "Query by category_id.")
+    product_id  : [String]  @doc(description: "Query by product_id.")
+    user_id  : String  @doc(description: "Query by user_id.")
+    subject  : String  @doc(description: "Query by subject.")
+    description  : String  @doc(description: "Query by description.")
+    priority  : String  @doc(description: "Query by priority.")
+    _id  : String  @doc(description: "Query by _id.")
+    status_id  : String  @doc(description: "Query by status_id.")
+    department_id  : String  @doc(description: "Query by department_id.")
+    customer_id  : String  @doc(description: "Query by customer_id.")
+    quote_address_id  : String  @doc(description: "Query by quote_address_id.")
+    customer_email  : String  @doc(description: "Query by customer_email.")
+    customer_name  : String  @doc(description: "Query by customer_name.")
+    order_id  : String  @doc(description: "Query by order_id.")
+    last_reply_name  : String  @doc(description: "Query by last_reply_name.")
+    last_reply_at  : String  @doc(description: "Query by last_reply_at.")
+    reply_cnt  : String  @doc(description: "Query by reply_cnt.")
+    store_id  : String  @doc(description: "Query by store_id.")
+    created_at  : String  @doc(description: "Query by created_at.")
+    updated_at  : String  @doc(description: "Query by updated_at.")
+    forder  : String  @doc(description: "Query by forder.")
+    email_id  : String  @doc(description: "Query by email_id.")
+    rating  : String  @doc(description: "Query by rating.")
+    first_reply_at  : String  @doc(description: "Query by first_reply_at.")
+    first_resolved_at  : String  @doc(description: "Query by first_resolved_at.")
+    fp_period_at  : String  @doc(description: "Query by fp_period_at.")
+    fp_period_unit  : String  @doc(description: "Query by fp_period_unit.")
+    fp_periof_value  : String  @doc(description: "Query by fp_periof_value.")
+    fp_execute_at  : String  @doc(description: "Query by fp_execute_at.")
+    fp_is_remind  : String  @doc(description: "Query by fp_is_remind.")
+    fp_remind_email  : String  @doc(description: "Query by fp_remind_email.")
+    fp_priority_id  : String  @doc(description: "Query by fp_priority_id.")
+    fp_status_id  : String  @doc(description: "Query by fp_status_id.")
+    fp_department_id  : String  @doc(description: "Query by fp_department_id.")
+    fp_user_id  : String  @doc(description: "Query by fp_user_id.")
+    channel  : String  @doc(description: "Query by channel.")
+    channel_data  : String  @doc(description: "Query by channel_data.")
+    third_party_email  : String  @doc(description: "Query by third_party_email.")
+    search_index  : String  @doc(description: "Query by search_index.")
+    cc  : String  @doc(description: "Query by cc.")
+    bcc  : String  @doc(description: "Query by bcc.")
+    is_read  : String  @doc(description: "Query by is_read.")
+    merged_ticket_id  : String  @doc(description: "Query by merged_ticket_id.")
+}
+
+input TicketFilterInput {
+    ticket_id: FilterTypeInput @doc(description: "Ticket ID")
+    created_at: FilterTypeInput @doc(description: "Created At")
+    updated_at: FilterTypeInput @doc(description: "Updated At")
+    category_id: FilterTypeInput @doc(description: "Category Id")
+    user_id: FilterTypeInput @doc(description: "User ID")
+    email_id: FilterTypeInput @doc(description: "Email Id")
+    store_id: FilterTypeInput @doc(description: "Store Id")
+    or: TicketFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}
