@@ -19,6 +19,7 @@ use Lof\HelpDesk\Model\Sender;
 use Lof\HelpDesk\Model\TicketFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Model\UserFactory;
 
@@ -157,6 +158,12 @@ class Ticket
         return $searchResults;
     }
 
+    /**
+     * @param $data
+     * @return false|\Lof\HelpDesk\Model\Ticket
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function createTicket($data) {
 
         if ($data) {
@@ -169,15 +176,15 @@ class Ticket
             $data['status_id'] = 1;
             $data['last_reply_name'] = $data['customer_name'];
             $data['reply_cnt'] = 0;
-            $data['category'] = $category->getTile();
+            $data['category'] = $category['title'];
             $data['namestore'] = $this->helper->getStoreName();
             $data['urllogin'] = $this->helper->getCustomerLoginUrl();
             $data['department_id'] = $this->helper->getDepartmentByCategory($data['category_id']);
 
             $department = $this->departmentRepository->get($data['department_id']);
             $data['email_to'] = [];
-            if (count($department->getData()) > 0) {
-                foreach ($department->getData('users') as $key => $_user) {
+            if (count($department) > 0) {
+                foreach ($department['users'] as $key => $_user) {
                     $user->load($_user, 'user_id');
                     $data['email_to'][] = $user->getEmail();
                 }

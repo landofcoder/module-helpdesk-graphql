@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Lof\HelpDeskGraphQl\Model\Resolver;
 
-use Magento\Framework\Api\DataObjectHelper;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\GraphQl\Model\Query\ContextInterface;
+use Magento\CustomerGraphQl\Model\Customer\GetCustomer;
 
 /**
  * Class CreateTicket
@@ -24,15 +23,22 @@ class CreateTicket implements ResolverInterface
      * @var DataProvider\Ticket
      */
     private $ticketProvider;
+    /**
+     * @var GetCustomer
+     */
+    private GetCustomer $getCustomer;
 
     /**
      * CreateTicket constructor.
      * @param DataProvider\Ticket $ticket
+     * @param GetCustomer $getCustomer
      */
     public function __construct(
-        DataProvider\Ticket $ticket
+        DataProvider\Ticket $ticket,
+        GetCustomer $getCustomer
     ) {
         $this->ticketProvider = $ticket;
+        $this->getCustomer = $getCustomer;
     }
 
     /**
@@ -55,10 +61,10 @@ class CreateTicket implements ResolverInterface
         }
 
         $customer = $this->getCustomer->execute($context);
-        $data['customer_id'] = $customer->getId();
-        $data['customer_name'] = $customer->getName();
-        $data['customer_email'] = $customer->getEmail();
-        $ticket = $this->ticketProvider->createTicket($data);
+        $args['customer_id'] = $customer->getId();
+        $args['customer_name'] = $customer->getFirstname();
+        $args['customer_email'] = $customer->getEmail();
+        $ticket = $this->ticketProvider->createTicket($args);
         if (!$ticket) {
             throw new GraphQlInputException(__('You are Spam!'));
         }
