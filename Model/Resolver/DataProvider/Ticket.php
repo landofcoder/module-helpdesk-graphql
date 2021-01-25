@@ -13,6 +13,10 @@ use Lof\HelpDesk\Api\Data\TicketSearchResultsInterfaceFactory;
 use Lof\HelpDesk\Api\DepartmentRepositoryInterface;
 use Lof\HelpDesk\Api\TicketRepositoryInterface;
 use Lof\HelpDesk\Helper\Data;
+use Lof\HelpDesk\Model\Attachment;
+use Lof\HelpDesk\Model\DepartmentFactory;
+use Lof\HelpDesk\Model\Like;
+use Lof\HelpDesk\Model\MessageFactory;
 use Lof\HelpDesk\Model\ResourceModel\Spam\Collection as SpamCollection;
 use Lof\HelpDesk\Model\ResourceModel\Ticket\CollectionFactory;
 use Lof\HelpDesk\Model\Sender;
@@ -78,6 +82,22 @@ class Ticket
      * @var Sender
      */
     private $sender;
+    /**
+     * @var MessageFactory
+     */
+    private $messageFactory;
+    /**
+     * @var Attachment
+     */
+    private $attachment;
+    /**
+     * @var DepartmentFactory
+     */
+    private $departmentFactory;
+    /**
+     * @var Like
+     */
+    private $_like;
 
     /**
      * Ticket constructor.
@@ -93,6 +113,10 @@ class Ticket
      * @param DepartmentRepositoryInterface $departmentRepository
      * @param SpamCollection $spamCollection
      * @param Sender $sender
+     * @param MessageFactory $messageFactory
+     * @param Attachment $attachment
+     * @param DepartmentFactory $departmentFactory
+     * @param Like $like
      */
     public function __construct(
         TicketRepositoryInterface $ticketRepository,
@@ -106,7 +130,11 @@ class Ticket
         Data $helper,
         DepartmentRepositoryInterface $departmentRepository,
         SpamCollection $spamCollection,
-        Sender $sender
+        Sender $sender,
+        MessageFactory $messageFactory,
+        Attachment $attachment,
+        DepartmentFactory $departmentFactory,
+        Like $like
     )
     {
         $this->ticketRepository = $ticketRepository;
@@ -121,7 +149,10 @@ class Ticket
         $this->departmentRepository = $departmentRepository;
         $this->spamCollection = $spamCollection;
         $this->sender = $sender;
-
+        $this->messageFactory = $messageFactory;
+        $this->attachment = $attachment;
+        $this->departmentFactory = $departmentFactory;
+        $this->_like = $like;
     }
 
     /**
@@ -169,7 +200,6 @@ class Ticket
         if ($data) {
             $ticketModel = $this->ticketFactory->create();
             $category = $this->categoryRepository->get($data['category_id']);
-
             $user = $this->userFactory->create();
             $store = $this->storeManagement;
             $data['store_id'] = $store->getStore()->getId();
@@ -180,7 +210,6 @@ class Ticket
             $data['namestore'] = $this->helper->getStoreName();
             $data['urllogin'] = $this->helper->getCustomerLoginUrl();
             $data['department_id'] = $this->helper->getDepartmentByCategory($data['category_id']);
-
             $department = $this->departmentRepository->get($data['department_id']);
             $data['email_to'] = [];
             if (count($department) > 0) {
@@ -190,18 +219,108 @@ class Ticket
                 }
             }
 
-            foreach ($this->spamCollection->addFieldToFilter('is_active', 1) as $key => $spam) {
+            if($this->isSpam($data)) return false;
 
-                if ($this->helper->checkSpam($spam, $data)) {
-                    return false;
-                }
-            }
             $ticketModel->setData($data)->save();
             if (count($data['email_to'])) {
                 $this->sender->newTicket($data);
             }
             return $ticketModel;
         }
+    }
+
+    /**
+     * @param $data
+     * @return bool|\Lof\HelpDesk\Model\Message
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function SendMessageTicket($data)
+    {
+        if ($data) {
+            $messageModel = $this->messageFactory->create();
+            if($this->isSpam($data)) return false;
+            $messageModel->setData($data)->save();
+            $data = $this->updateData($data);
+            if ($this->helper->getConfig('email_settings/enable_testmode')) {
+                $this->sender->newMessage($data);
+            }
+
+            $attachmentData = [];
+            $attachmentData['message_id'] = $messageModel->getId();
+            $attachmentData['body'] = $data['attachment'];
+            $attachmentData['name'] = $data['attachment_name'];
+            $this->attachment->setData($attachmentData)->save();
+            return $messageModel;
+        }
+    }
+
+    /**
+     * @param $data
+     * @return \Lof\HelpDesk\Model\Ticket
+     */
+    public function LikeTicket($data)
+    {
+        if($data) {
+            $like = $this->_like->load($data['message_id'], 'message_id');
+            $like->setData('customer_id', $data['customer_id'])->setData('message_id', $data['message_id'])->save();
+            return $like;
+        }
+    }
+
+    /**
+     * @param $data
+     * @return \Lof\HelpDesk\Model\Ticket
+     */
+    public function RateTicket($data)
+    {
+        if($data) {
+            $ticket = $this->ticketFactory->create()->load($data['ticket_id']);
+            $ticket->setRating($data['rating'])->save();
+            return $ticket;
+        }
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     */
+    public function isSpam($data){
+        foreach ($this->spamCollection->addFieldToFilter('is_active', 1) as $key => $spam) {
+            if ($this->helper->checkSpam($spam, $data)) {
+                return true;
+            }
+        }
+    }
+
+    /**
+     * @param $data
+     * @return mixed
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function updateData($data) {
+        $store = $this->storeManagement;
+        $ticket = $this->ticketRepository->get($data['ticket_id']);
+        $category = $this->categoryRepository->get($ticket['category_id']);
+        $data['nameticket'] = $ticket['subject'];
+        $data['category'] = $category['title'];
+        $data['store_id'] = $store->getStore()->getId();
+        $data['namestore'] = $this->helper->getStoreName();
+        $data['urllogin'] = $this->helper->getCustomerLoginUrl();
+        $user = $this->userFactory->create();
+        $department = $this->departmentFactory->create();
+        foreach ($department->getCollection() as $key => $_department) {
+            $dataDepartment = $department->load($_department->getDepartmentId())->getData();
+            if (in_array($ticket['category_id'], $dataDepartment['category_id']) && $dataDepartment['is_active'] == 1 && (in_array($data['store_id'], $dataDepartment['store_id']) || in_array(0, $dataDepartment['store_id']))) {
+                $data['email_to'] = [];
+                foreach ($dataDepartment['users'] as $key => $_user) {
+                    $user->load($_user, 'user_id');
+                    $data['email_to'][] = $user->getEmail();
+                }
+            }
+        }
+        return $data;
     }
 }
 

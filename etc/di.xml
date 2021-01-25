@@ -8,4 +8,20 @@
         </arguments>
     </type>
 
+    <type name="Magento\Framework\GraphQl\Query\Resolver\Argument\FieldEntityAttributesPool">
+        <arguments>
+            <argument name="attributesInstances" xsi:type="array">
+                <item name="lof_helpdesk_chat" xsi:type="object">\Lof\HelpDeskGraphQl\Model\Filter\FilterArgumentChat</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\GraphQl\Query\Resolver\Argument\FieldEntityAttributesPool">
+        <arguments>
+            <argument name="attributesInstances" xsi:type="array">
+                <item name="lof_helpdesk_category" xsi:type="object">\Lof\HelpDeskGraphQl\Model\Filter\FilterArgumentCategory</item>
+            </argument>
+        </arguments>
+    </type>
+
 </config>
