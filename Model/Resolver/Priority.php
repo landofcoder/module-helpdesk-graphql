@@ -38,9 +38,8 @@ class Priority implements ResolverInterface
         $data[3]['id'] = 3;
         $data[3]['title'] = __('Ugent');
 
-        $obj = new \Magento\Framework\DataObject();
-        $obj->setItems($data);
-        return $obj;
+        $result['items'] = $data;
+        return $result;
     }
 }
 
