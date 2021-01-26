@@ -46,6 +46,8 @@ type Query {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ) : Categories @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Categories") @doc(description: "Get Categories.")
+
+    LofHelpDeskPriority  : Priorities @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Priority") @doc(description: "Get Priority.")
 }
 
 type Mutation {
@@ -64,6 +66,16 @@ type Mutation {
 type Tickets {
     total_count: Int @doc(description: "The number of tickets returned")
     items: [Ticket] @doc(description: "An array of tickets that match the specified search criteria")
+}
+
+type Priorities {
+    items : [Priority] @doc(description: "Priority")
+
+}
+
+type Priority {
+    title: String @doc(description: "Title")
+    id: Int @doc(description: "Id")
 }
 
 type Categories {
@@ -118,7 +130,9 @@ type Ticket {
     priority  : String  @doc(description: "Query by priority.")
     _id  : String  @doc(description: "Query by _id.")
     status_id  : String  @doc(description: "Query by status_id.")
+    status  : String  @doc(description: "Query by status.")
     department_id  : String  @doc(description: "Query by department_id.")
+    department  : String  @doc(description: "Query by department.")
     customer_id  : String  @doc(description: "Query by customer_id.")
     quote_address_id  : String  @doc(description: "Query by quote_address_id.")
     customer_email  : String  @doc(description: "Query by customer_email.")
@@ -225,11 +239,21 @@ input TicketFilterInput {
     ticket_id: FilterTypeInput @doc(description: "Ticket ID")
     created_at: FilterTypeInput @doc(description: "Created At")
     updated_at: FilterTypeInput @doc(description: "Updated At")
-    category_id: FilterTypeInput @doc(description: "Category Id")
+    identifier: FilterTypeInput @doc(description: "Identifier")
     user_id: FilterTypeInput @doc(description: "User ID")
     email_id: FilterTypeInput @doc(description: "Email Id")
     store_id: FilterTypeInput @doc(description: "Store Id")
     or: TicketFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}
+
+input CategoryFilterInput {
+    category_id: FilterTypeInput @doc(description: "Category ID")
+    creation_time: FilterTypeInput @doc(description: "Created At")
+    update_time: FilterTypeInput @doc(description: "Update Time")
+    position: FilterTypeInput @doc(description: "Position")
+    include_in_sidebar: FilterTypeInput @doc(description: "Include In Sidebar")
+    is_active: FilterTypeInput @doc(description: "Is Active")
+    or: CategoryFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
 }
 
 

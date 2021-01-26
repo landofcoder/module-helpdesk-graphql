@@ -69,8 +69,12 @@ class SendMessageTicket implements ResolverInterface
 
         $args = $args['input'];
 
-        if (!($args['ticket_id']) || !isset($args['ticket_id'])) {
-            throw new GraphQlInputException(__('"input" value should be specified'));
+        if (!isset($args['ticket_id']) || !$args['ticket_id'] ) {
+            throw new GraphQlInputException(__('Field "ticket_id" can\t be empty'));
+        }
+
+        if (!isset($args['body']) || !$args['body'] ) {
+            throw new GraphQlInputException(__(' Field "body" can\t be empty'));
         }
 
         $customer = $this->getCustomer->execute($context);

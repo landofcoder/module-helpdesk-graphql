@@ -13,6 +13,10 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
+/**
+ * Class Categories
+ * @package Lof\HelpDeskGraphQl\Model\Resolver
+ */
 class Categories implements ResolverInterface
 {
 
@@ -25,6 +29,11 @@ class Categories implements ResolverInterface
      */
     private $categoryProvider;
 
+    /**
+     * Categories constructor.
+     * @param DataProvider\Category $categoryRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         DataProvider\Category $categoryRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
@@ -50,7 +59,7 @@ class Categories implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_chat', $args );
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_category', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 

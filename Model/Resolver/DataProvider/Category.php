@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Lof\HelpDeskGraphQl\Model\Resolver\DataProvider;
 
 use Lof\HelpDesk\Api\CategoryRepositoryInterface;
-use Lof\HelpDesk\Api\Data\CategoryMessageSearchResultsInterfaceFactory;
+use Lof\HelpDesk\Api\Data\CategorySearchResultsInterfaceFactory;
 use Lof\HelpDesk\Helper\Data;
 use Lof\HelpDesk\Model\CategoryFactory;
 use Lof\HelpDesk\Model\ResourceModel\Category\CollectionFactory;
@@ -24,10 +24,6 @@ class Category
 {
 
     /**
-     * @var ChatRepositoryInterface
-     */
-    private $chatRepository;
-    /**
      * @var CollectionFactory
      */
     private $categoryCollection;
@@ -36,13 +32,13 @@ class Category
      */
     private $collectionProcessor;
     /**
-     * @var ChatMessageSearchResultsInterfaceFactory
+     * @var CategoryResultsInterfaceFactory
      */
     private $searchResultsFactory;
     /**
-     * @var ChatFactory
+     * @var CategoryFactory
      */
-    private $chatFactory;
+    private $categoryFactory;
     /**
      * @var CategoryRepositoryInterface
      */
@@ -59,14 +55,6 @@ class Category
      * @var Data
      */
     private $helper;
-    /**
-     * @var ChatMessageFactory
-     */
-    private $messageFactory;
-    /**
-     * @var ChatMessageCollection
-     */
-    private $chatMessageCollection;
 
 
     /**
@@ -74,7 +62,7 @@ class Category
      * @param CollectionFactory $categoryCollection
      * @param CollectionProcessorInterface $collectionProcessor
      * @param CategorySearchResultsInterfaceFactory $searchResultsFactory
-     * @param CategoryFactory $chatFactory
+     * @param CategoryFactory $categoryFactory
      * @param CategoryRepositoryInterface $categoryRepository
      * @param UserFactory $userFactory
      * @param StoreManagerInterface $storeManagement
@@ -84,7 +72,7 @@ class Category
         CollectionFactory $categoryCollection,
         CollectionProcessorInterface $collectionProcessor,
         CategorySearchResultsInterfaceFactory $searchResultsFactory,
-        CategoryFactory $chatFactory,
+        CategoryFactory $categoryFactory,
         CategoryRepositoryInterface $categoryRepository,
         UserFactory $userFactory,
         StoreManagerInterface $storeManagement,
@@ -92,10 +80,10 @@ class Category
 
     )
     {
-        $this->chatCollection = $categoryCollection;
+        $this->categoryCollection = $categoryCollection;
         $this->collectionProcessor = $collectionProcessor;
         $this->searchResultsFactory = $searchResultsFactory;
-        $this->chatFactory = $chatFactory;
+        $this->categoryFactory = $categoryFactory;
         $this->categoryRepository = $categoryRepository;
         $this->userFactory = $userFactory;
         $this->storeManagement = $storeManagement;

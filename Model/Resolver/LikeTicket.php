@@ -67,11 +67,11 @@ class LikeTicket implements ResolverInterface
 
         $customer = $this->getCustomer->execute($context);
         $args['customer_id'] = $customer->getId();
-//        if(!isset($ticket['customer_id']) || $ticket['customer_id'] != $customer->getId()) {
-//            throw new GraphQlInputException(__('You don\'t have permission to rate for this ticket'));
-//        }
 
-        $like = $this->ticketProvider->LikeTicket($args);
-        return $like;
+        if(!isset($ticket['customer_id']) || $ticket['customer_id'] != $customer->getId()) {
+            throw new GraphQlInputException(__('You don\'t have permission to like this ticket'));
+        }
+
+        return $this->ticketProvider->LikeTicket($args);
     }
 }

@@ -69,7 +69,6 @@ class Chat implements ResolverInterface
             throw new GraphQlInputException(__('"body_msg" value should be specified'));
         }
 
-        $chat = $this->chatProvider->Chat($data);
-        return $chat;
+        return $this->chatProvider->Chat($data);
     }
 }

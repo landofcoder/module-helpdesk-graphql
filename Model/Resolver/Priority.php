@@ -12,25 +12,11 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 
 /**
- * Class Ticket
+ * Class Priority
  * @package Lof\HelpDeskGraphQl\Model\Resolver
  */
-class Ticket implements ResolverInterface
+class Priority implements ResolverInterface
 {
-
-    /**
-     * @var DataProvider\Ticket
-     */
-    private $ticketProvider;
-
-    /**
-     * @param DataProvider\Ticket $TicketRepository
-     */
-    public function __construct(
-        DataProvider\Ticket $TicketRepository
-    ) {
-        $this->ticketProvider = $TicketRepository;
-    }
 
     /**
      * @inheritdoc
@@ -42,7 +28,19 @@ class Ticket implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        return $this->ticketProvider->getTicketById($args['ticket_id']);
+        $data = [];
+        $data[0]['id'] = 0;
+        $data[0]['title'] = __('Low');
+        $data[1]['id'] = 1;
+        $data[1]['title'] = __('Medium');
+        $data[2]['id'] = 2;
+        $data[2]['title'] = __('Height');
+        $data[3]['id'] = 3;
+        $data[3]['title'] = __('Ugent');
+
+        $obj = new \Magento\Framework\DataObject();
+        $obj->setItems($data);
+        return $obj;
     }
 }
 

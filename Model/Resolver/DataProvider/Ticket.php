@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Lof\HelpDeskGraphQl\Model\Resolver\DataProvider;
 
+use Exception;
 use Lof\HelpDesk\Api\CategoryRepositoryInterface;
 use Lof\HelpDesk\Api\Data\TicketInterface;
 use Lof\HelpDesk\Api\Data\TicketSearchResultsInterfaceFactory;
@@ -24,6 +25,7 @@ use Lof\HelpDesk\Model\TicketFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Model\UserFactory;
 
@@ -181,6 +183,7 @@ class Ticket
 
         $items = [];
         foreach ($collection as $key => $model) {
+            $model->load($model->getTicketId());
             $items[$key] = $model->getData();
         }
 
@@ -194,12 +197,16 @@ class Ticket
      * @return false|\Lof\HelpDesk\Model\Ticket
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws Exception
      */
     public function createTicket($data) {
 
         if ($data) {
             $ticketModel = $this->ticketFactory->create();
             $category = $this->categoryRepository->get($data['category_id']);
+            if (!$category) {
+                throw new GraphQlInputException(__('Category Id does not exists'));
+            }
             $user = $this->userFactory->create();
             $store = $this->storeManagement;
             $data['store_id'] = $store->getStore()->getId();
@@ -210,7 +217,9 @@ class Ticket
             $data['namestore'] = $this->helper->getStoreName();
             $data['urllogin'] = $this->helper->getCustomerLoginUrl();
             $data['department_id'] = $this->helper->getDepartmentByCategory($data['category_id']);
+            $data['status'] = $this->getStatus($data['status_id']);
             $department = $this->departmentRepository->get($data['department_id']);
+            $data['department'] = $department->getTitle();
             $data['email_to'] = [];
             if (count($department) > 0) {
                 foreach ($department['users'] as $key => $_user) {
@@ -227,6 +236,24 @@ class Ticket
             }
             return $ticketModel;
         }
+    }
+
+    /**
+     * @param $status_id
+     * @return \Magento\Framework\Phrase|string
+     */
+    protected function getStatus($status_id){
+        $data = '';
+        if ($status_id == 0) {
+            $data = __('Close');
+        } elseif ($status_id == 1) {
+            $data = __('Open');
+        } elseif ($status_id == 2) {
+            $data = __('Processing');
+        } elseif ($status_id == 3) {
+            $data = __('Done');
+        }
+        return $data;
     }
 
     /**
@@ -257,7 +284,8 @@ class Ticket
 
     /**
      * @param $data
-     * @return \Lof\HelpDesk\Model\Ticket
+     * @return Like
+     * @throws Exception
      */
     public function LikeTicket($data)
     {

@@ -18,7 +18,6 @@ use Magento\CustomerGraphQl\Model\Customer\GetCustomer;
 class CreateTicket implements ResolverInterface
 {
 
-
     /**
      * @var DataProvider\Ticket
      */

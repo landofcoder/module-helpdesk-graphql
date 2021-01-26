@@ -70,7 +70,11 @@ class RateTicket implements ResolverInterface
         $args = $args['input'];
 
         if (!($args['ticket_id']) || !isset($args['ticket_id'])) {
-            throw new GraphQlInputException(__('"input" value should be specified'));
+            throw new GraphQlInputException(__('"ticket_id" value can\'t be empty'));
+        }
+
+        if (!($args['rating']) || !isset($args['rating'])) {
+            throw new GraphQlInputException(__('"rating" value  can\'t be empty'));
         }
 
         $customer = $this->getCustomer->execute($context);

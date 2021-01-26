@@ -13,6 +13,10 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
+/**
+ * Class GetChats
+ * @package Lof\HelpDeskGraphQl\Model\Resolver
+ */
 class GetChats implements ResolverInterface
 {
 
@@ -25,6 +29,11 @@ class GetChats implements ResolverInterface
      */
     private $chatProvider;
 
+    /**
+     * GetChats constructor.
+     * @param DataProvider\Chat $chatRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         DataProvider\Chat $chatRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
