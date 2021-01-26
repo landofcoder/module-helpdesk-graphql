@@ -52,15 +52,15 @@ type Query {
 
 type Mutation {
 
-    LofCreateTicket(input: TicketInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\CreateTicket") @doc(description: "Create a new Ticket")
+    LofHelpDeskCreateTicket(input: TicketInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\CreateTicket") @doc(description: "Create a new Ticket")
 
-    LofSendMessageTicket(input: MessageInput!): Message @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\SendMessageTicket") @doc(description: "Send Message in Ticket")
+    LofHelpDeskSendMessageTicket(input: MessageInput!): Message @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\SendMessageTicket") @doc(description: "Send Message in Ticket")
 
-    LofRatingTicket(input: RatingInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\RateTicket") @doc(description: "Rate Ticket")
+    LofHelpDeskRatingTicket(input: RatingInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\RateTicket") @doc(description: "Rate Ticket")
 
-    LofLikeTicket(input: LikeInput!): Like @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\LikeTicket") @doc(description: "Like Ticket")
+    LofHelpDeskLikeTicket(input: LikeInput!): Like @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\LikeTicket") @doc(description: "Like Ticket")
 
-    LofChat(input: ChatInput!): Chat @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\Chat") @doc(description: "Chat")
+    LofHelpDeskChat(input: ChatInput!): Chat @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\Chat") @doc(description: "Chat")
 }
 
 type Tickets {
