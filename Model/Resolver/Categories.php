@@ -13,7 +13,11 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
-class Tickets implements ResolverInterface
+/**
+ * Class Categories
+ * @package Lof\HelpDeskGraphQl\Model\Resolver
+ */
+class Categories implements ResolverInterface
 {
 
     /**
@@ -21,17 +25,22 @@ class Tickets implements ResolverInterface
      */
     private $searchCriteriaBuilder;
     /**
-     * @var DataProvider\Ticket
+     * @var DataProvider\Category
      */
-    private $ticketProvider;
+    private $categoryProvider;
 
+    /**
+     * Categories constructor.
+     * @param DataProvider\Category $categoryRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
-        DataProvider\Ticket $TicketRepository,
+        DataProvider\Category $categoryRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->ticketProvider = $TicketRepository;
+        $this->categoryProvider = $categoryRepository;
     }
 
     /**
@@ -50,11 +59,11 @@ class Tickets implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_ticket', $args );
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_category', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->ticketProvider->getListTickets( $searchCriteria );
+        $searchResult = $this->categoryProvider->getListCategories( $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

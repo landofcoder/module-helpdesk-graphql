@@ -32,15 +32,80 @@ type Query {
             pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
             currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ) : Tickets @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\Tickets") @doc(description: "The tickets query searches for ticktets that match the criteria specified in the search and filter attributes")
+
+    LofHelpDeskChatMessage (
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: ChatFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ) : Chats @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\GetChats") @doc(description: "Get Chats.")
+
+    LofHelpDeskCategories (
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: CategoryFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ) : Categories @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Categories") @doc(description: "Get Categories.")
+
+    LofHelpDeskPriority  : Priorities @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Priority") @doc(description: "Get Priority.")
 }
 
 type Mutation {
-  LofCreateTicket(input: TicketInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\CreateTicket") @doc(description: "Create a new pickup store")
+
+    LofHelpDeskCreateTicket(input: TicketInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\CreateTicket") @doc(description: "Create a new Ticket")
+
+    LofHelpDeskSendMessageTicket(input: MessageInput!): Message @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\SendMessageTicket") @doc(description: "Send Message in Ticket")
+
+    LofHelpDeskRatingTicket(input: RatingInput!): Ticket @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\RateTicket") @doc(description: "Rate Ticket")
+
+    LofHelpDeskLikeTicket(input: LikeInput!): Like @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\LikeTicket") @doc(description: "Like Ticket")
+
+    LofHelpDeskChat(input: ChatInput!): Chat @resolver(class: "\\Lof\\HelpDeskGraphQl\\Model\\Resolver\\Chat") @doc(description: "Chat")
 }
 
 type Tickets {
     total_count: Int @doc(description: "The number of tickets returned")
     items: [Ticket] @doc(description: "An array of tickets that match the specified search criteria")
+}
+
+type Priorities {
+    items : [Priority] @doc(description: "Priority")
+
+}
+
+type Priority {
+    title: String @doc(description: "Title")
+    id: Int @doc(description: "Id")
+}
+
+type Categories {
+    total_count: Int @doc(description: "The number of Categories returned")
+    items: [Category] @doc(description: "An array of Categories that match the specified search criteria")
+}
+
+type Chats {
+    total_count: Int @doc(description: "The number of message returned")
+    items: [Chat] @doc(description: "An array of messages that match the specified search criteria")
+}
+
+input ChatInput {
+    body_msg  : String @doc(description: "Body.")
+}
+
+input LikeInput {
+    message_id  : String @doc(description: "message ID.")
+}
+
+input RatingInput {
+    ticket_id  : String @doc(description: "ticket ID.")
+    rating  : String @doc(description: "rating.")
+}
+
+input MessageInput {
+    ticket_id  : String @doc(description: "ticket ID.")
+    body  : String @doc(description: "body of message.")
+    attachment : String  @doc(description: "attachment.")
+    attachment_name : String  @doc(description: "attachment_name.")
 }
 
 input TicketInput {
@@ -55,7 +120,6 @@ input TicketInput {
 }
 
 type Ticket {
-
     ticket_id  : String  @doc(description: "Query by ticket_id.")
     code  : String  @doc(description: "Query by code.")
     category_id  : String  @doc(description: "Query by category_id.")
@@ -66,7 +130,9 @@ type Ticket {
     priority  : String  @doc(description: "Query by priority.")
     _id  : String  @doc(description: "Query by _id.")
     status_id  : String  @doc(description: "Query by status_id.")
+    status  : String  @doc(description: "Query by status.")
     department_id  : String  @doc(description: "Query by department_id.")
+    department  : String  @doc(description: "Query by department.")
     customer_id  : String  @doc(description: "Query by customer_id.")
     quote_address_id  : String  @doc(description: "Query by quote_address_id.")
     customer_email  : String  @doc(description: "Query by customer_email.")
@@ -103,13 +169,91 @@ type Ticket {
     merged_ticket_id  : String  @doc(description: "Query by merged_ticket_id.")
 }
 
+type Message {
+    message_id  : String  @doc(description: "Query by message ID.")
+    ticket_id  : String  @doc(description: "Query by ticket ID.")
+    email_id  : String  @doc(description: "Query by email ID.")
+    user_id  : String  @doc(description: "Query by user_id.")
+    body  : String  @doc(description: "Query by body.")
+    user_email  : String  @doc(description: "Query by user email.")
+    user_name  : String  @doc(description: "Query by user name.")
+    customer_id  : String  @doc(description: "Query by customer ID.")
+    customer_email  : String  @doc(description: "Query by customer email.")
+    customer_name  : String  @doc(description: "Query by customer name.")
+    body_format  : String  @doc(description: "Query by body format.")
+    created_at  : String  @doc(description: "Query by created_at.")
+    updated_at  : String  @doc(description: "Query by updated_at.")
+    is_read  : String  @doc(description: "Query by is_read.")
+}
+
+type Like {
+    message_id  : String  @doc(description: "Query by message ID.")
+    like_id  : String  @doc(description: "Query by like ID.")
+    customer_id  : String  @doc(description: "Query by customer ID.")
+    customer_email  : String  @doc(description: "Query by customer email.")
+    customer_name  : String  @doc(description: "Query by customer name.")
+}
+
+type Chat {
+    chat_id  : String  @doc(description: "Query by chat ID.")
+    message_id  : String  @doc(description: "Query by message ID.")
+    user_id  : String  @doc(description: "Query by user ID.")
+    customer_id  : String  @doc(description: "Query by customer ID.")
+    customer_email  : String  @doc(description: "Query by customer email.")
+    customer_name  : String  @doc(description: "Query by customer name.")
+    is_read: String  @doc(description: "Is Read.")
+    user_name: String  @doc(description: "User Name.")
+    name: String  @doc(description: "Name.")
+    body_msg: String  @doc(description: "Body.")
+    created_at: String  @doc(description: "Created At.")
+    updated_at: String  @doc(description: "Updated At.")
+}
+
+type Category {
+    category_id  : String  @doc(description: "Query by category ID.")
+    title  : String  @doc(description: "Query by title.")
+    cat_icon  : String  @doc(description: "Query by Category Icon.")
+    page_title  : String  @doc(description: "Query by page title.")
+    identifier  : String  @doc(description: "Query by identifier.")
+    description  : String  @doc(description: "Query by description.")
+    grid_column: String  @doc(description: "Grid column.")
+    layout_type: String  @doc(description: "Layout Type.")
+    page_layout: String  @doc(description: "Page Layout.")
+    meta_keywords: String  @doc(description: "Meta Keywords.")
+    meta_description: String  @doc(description: "Meta Description.")
+    image: String  @doc(description: "Image.")
+    creation_time: String  @doc(description: "Creation Time.")
+    update_time: String  @doc(description: "Update Time.")
+    position: String  @doc(description: "Position.")
+    include_in_sidebar: String  @doc(description: "Include In Sidebar.")
+    is_active: String  @doc(description: "Is Active.")
+}
+
+input ChatFilterInput {
+    created_at: FilterTypeInput @doc(description: "Created At")
+    updated_at: FilterTypeInput @doc(description: "Updated At")
+    or: ChatFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}
+
 input TicketFilterInput {
     ticket_id: FilterTypeInput @doc(description: "Ticket ID")
     created_at: FilterTypeInput @doc(description: "Created At")
     updated_at: FilterTypeInput @doc(description: "Updated At")
-    category_id: FilterTypeInput @doc(description: "Category Id")
+    identifier: FilterTypeInput @doc(description: "Identifier")
     user_id: FilterTypeInput @doc(description: "User ID")
     email_id: FilterTypeInput @doc(description: "Email Id")
     store_id: FilterTypeInput @doc(description: "Store Id")
     or: TicketFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
 }
+
+input CategoryFilterInput {
+    category_id: FilterTypeInput @doc(description: "Category ID")
+    creation_time: FilterTypeInput @doc(description: "Created At")
+    update_time: FilterTypeInput @doc(description: "Update Time")
+    position: FilterTypeInput @doc(description: "Position")
+    include_in_sidebar: FilterTypeInput @doc(description: "Include In Sidebar")
+    is_active: FilterTypeInput @doc(description: "Is Active")
+    or: CategoryFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}
+
+

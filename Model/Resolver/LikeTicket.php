@@ -12,10 +12,10 @@ use Magento\GraphQl\Model\Query\ContextInterface;
 use Magento\CustomerGraphQl\Model\Customer\GetCustomer;
 
 /**
- * Class CreateTicket
+ * Class LikeTicket
  * @package Lof\HelpDeskGraphQl\Model\Resolver
  */
-class CreateTicket implements ResolverInterface
+class LikeTicket implements ResolverInterface
 {
 
     /**
@@ -54,21 +54,24 @@ class CreateTicket implements ResolverInterface
         if (!$context->getExtensionAttributes()->getIsCustomer()) {
             throw new GraphQlAuthorizationException(__('The current customer isn\'t authorized.'));
         }
-        $args = $args['input'];
-        if (!($args['subject']) || !isset($args['subject'])) {
+
+        if( !isset($args['input']) || !$args['input']) {
             throw new GraphQlInputException(__('"input" value should be specified'));
+        }
+
+        $args = $args['input'];
+
+        if (!($args['message_id']) || !isset($args['message_id'])) {
+            throw new GraphQlInputException(__('"message_id" value should be specified'));
         }
 
         $customer = $this->getCustomer->execute($context);
         $args['customer_id'] = $customer->getId();
-        $args['customer_name'] = $customer->getFirstname().' '.$customer->getLastname();
-        $args['customer_email'] = $customer->getEmail();
-        $ticket = $this->ticketProvider->createTicket($args);
-        if (!$ticket) {
-            throw new GraphQlInputException(__('You are Spam!'));
+
+        if(!isset($ticket['customer_id']) || $ticket['customer_id'] != $customer->getId()) {
+            throw new GraphQlInputException(__('You don\'t have permission to like this ticket'));
         }
-        return $ticket;
+
+        return $this->ticketProvider->LikeTicket($args);
     }
-
-
 }

@@ -13,7 +13,11 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
-class Tickets implements ResolverInterface
+/**
+ * Class GetChats
+ * @package Lof\HelpDeskGraphQl\Model\Resolver
+ */
+class GetChats implements ResolverInterface
 {
 
     /**
@@ -21,17 +25,22 @@ class Tickets implements ResolverInterface
      */
     private $searchCriteriaBuilder;
     /**
-     * @var DataProvider\Ticket
+     * @var DataProvider\Chat
      */
-    private $ticketProvider;
+    private $chatProvider;
 
+    /**
+     * GetChats constructor.
+     * @param DataProvider\Chat $chatRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
-        DataProvider\Ticket $TicketRepository,
+        DataProvider\Chat $chatRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->ticketProvider = $TicketRepository;
+        $this->chatProvider = $chatRepository;
     }
 
     /**
@@ -50,11 +59,11 @@ class Tickets implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_ticket', $args );
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'lof_helpdesk_chat', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->ticketProvider->getListTickets( $searchCriteria );
+        $searchResult = $this->chatProvider->getListChatMessages( $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

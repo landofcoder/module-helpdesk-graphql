@@ -12,16 +12,16 @@ use Magento\GraphQl\Model\Query\ContextInterface;
 use Magento\CustomerGraphQl\Model\Customer\GetCustomer;
 
 /**
- * Class CreateTicket
+ * Class Chat
  * @package Lof\HelpDeskGraphQl\Model\Resolver
  */
-class CreateTicket implements ResolverInterface
+class Chat implements ResolverInterface
 {
 
     /**
-     * @var DataProvider\Ticket
+     * @var DataProvider\Chat
      */
-    private $ticketProvider;
+    private $chatProvider;
     /**
      * @var GetCustomer
      */
@@ -29,14 +29,14 @@ class CreateTicket implements ResolverInterface
 
     /**
      * CreateTicket constructor.
-     * @param DataProvider\Ticket $ticket
+     * @param DataProvider\Chat $chatProvider
      * @param GetCustomer $getCustomer
      */
     public function __construct(
-        DataProvider\Ticket $ticket,
+        DataProvider\Chat $chatProvider,
         GetCustomer $getCustomer
     ) {
-        $this->ticketProvider = $ticket;
+        $this->chatProvider = $chatProvider;
         $this->getCustomer = $getCustomer;
     }
 
@@ -50,25 +50,25 @@ class CreateTicket implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        /** @var ContextInterface $context */
-        if (!$context->getExtensionAttributes()->getIsCustomer()) {
-            throw new GraphQlAuthorizationException(__('The current customer isn\'t authorized.'));
-        }
-        $args = $args['input'];
-        if (!($args['subject']) || !isset($args['subject'])) {
+
+        if( !isset($args['input']) || !$args['input']) {
             throw new GraphQlInputException(__('"input" value should be specified'));
         }
-
-        $customer = $this->getCustomer->execute($context);
-        $args['customer_id'] = $customer->getId();
-        $args['customer_name'] = $customer->getFirstname().' '.$customer->getLastname();
-        $args['customer_email'] = $customer->getEmail();
-        $ticket = $this->ticketProvider->createTicket($args);
-        if (!$ticket) {
-            throw new GraphQlInputException(__('You are Spam!'));
+        $data = $args['input'];
+        /** @var ContextInterface $context */
+        if ($context->getExtensionAttributes()->getIsCustomer()) {
+            $customer = $this->getCustomer->execute($context);
+            $data['customer_id'] = $customer->getId();
+            $data['customer_name'] = $customer->getFirstname().' '.$customer->getLastname();
+            $data['customer_email'] = $customer->getEmail();
+        } else {
+            $data['customer_id'] = 0;
         }
-        return $ticket;
+
+        if (!($data['body_msg']) || !isset($data['body_msg'])) {
+            throw new GraphQlInputException(__('"body_msg" value should be specified'));
+        }
+
+        return $this->chatProvider->Chat($data);
     }
-
-
 }
