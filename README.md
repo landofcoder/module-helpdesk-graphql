@@ -1,13 +1,9 @@
-# Magento 2 Module Lof HelpDeskGraphQl
+# Magento 2 Module Lof HelpDesk GraphQl
 
-    ``lof/module-helpdesk-graphql``
+    ``landofcoder/module-helpdesk-graphql``
 
  - [Main Functionalities](#markdown-header-main-functionalities)
  - [Installation](#markdown-header-installation)
- - [Configuration](#markdown-header-configuration)
- - [Specifications](#markdown-header-specifications)
- - [Attributes](#markdown-header-attributes)
-
 
 ## Main Functionalities
 
@@ -29,19 +25,7 @@
     - public repository `packagist.org`
     - public github repository as vcs
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require lof/module-helpdeskgraphql`
+ - Install the module composer by running `composer require landofcoder/module-helpdesk-graphql`
  - enable the module by running `php bin/magento module:enable Lof_HelpDeskGraphQl`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`
-
-
-## Configuration
-
-
-## Specifications
-
-
-## Attributes
-
-
-

@@ -1,20 +1,16 @@
 {
     "name": "landofcoder/module-helpdesk-graphql",
-    "description": "",
+    "description": "Module HelpDesk GraphQL",
     "type": "magento2-module",
     "license": "OSL-3.0",
     "authors": [
         {
             "email": "landofcoder@gmail.com",
             "name": "LandOfCoder"
-        },
-        {
-            "email": "vanchinhpc9@gmail.com",
-            "name": "Nguyen Van Chinh"
         }
     ],
     "require": {
-        "landofcoder/module-helpdesk": "1.0.3"
+        "landofcoder/module-helpdesk-graphql": "1.0.3"
     },
     "autoload": {
         "psr-4": {
