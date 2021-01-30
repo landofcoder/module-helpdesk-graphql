@@ -85,6 +85,7 @@ type Orders {
 
 type Priorities {
     items : [Priority] @doc(description: "Priority")
+
 }
 
 type Priority {
