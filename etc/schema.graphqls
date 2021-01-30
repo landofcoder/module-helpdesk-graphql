@@ -47,6 +47,15 @@ type Query {
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ) : Categories @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Categories") @doc(description: "Get Categories.")
 
+    LofHelpDeskDepartments (
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: DepartmentFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ) : Departments @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Departments") @doc(description: "Get Categories.")
+
+    LofHelpDeskOrders : Orders @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Orders") @doc(description: "Get Order by ID.")
+
     LofHelpDeskPriority  : Priorities @resolver( class: "Lof\\HelpDeskGraphQl\\Model\\Resolver\\Priority") @doc(description: "Get Priority.")
 }
 
@@ -68,6 +77,12 @@ type Tickets {
     items: [Ticket] @doc(description: "An array of tickets that match the specified search criteria")
 }
 
+type Orders {
+    total_count: Int @doc(description: "The number of orders returned")
+    items: [OrderById] @doc(description: "An array of orders that match the specified search criteria")
+}
+
+
 type Priorities {
     items : [Priority] @doc(description: "Priority")
 
@@ -81,6 +96,11 @@ type Priority {
 type Categories {
     total_count: Int @doc(description: "The number of Categories returned")
     items: [Category] @doc(description: "An array of Categories that match the specified search criteria")
+}
+
+type Departments {
+    total_count: Int @doc(description: "The number of Departments returned")
+    items: [Department] @doc(description: "An array of Departments that match the specified search criteria")
 }
 
 type Chats {
@@ -209,6 +229,17 @@ type Chat {
     updated_at: String  @doc(description: "Updated At.")
 }
 
+
+type Department {
+    department_id  : String  @doc(description: "Query by department ID.")
+    title  : String  @doc(description: "Query by title.")
+    identifier  : String  @doc(description: "Query by identifier.")
+    creation_time  : String  @doc(description: "Query by creation_time.")
+    update_time  : String  @doc(description: "Query by update_time.")
+    position  : String  @doc(description: "Query by position.")
+    is_active: String  @doc(description: "Is Active.")
+}
+
 type Category {
     category_id  : String  @doc(description: "Query by category ID.")
     title  : String  @doc(description: "Query by title.")
@@ -256,4 +287,36 @@ input CategoryFilterInput {
     or: CategoryFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
 }
 
+
+input DepartmentFilterInput {
+    department_id  : FilterTypeInput  @doc(description: "Query by department ID.")
+    title  : FilterTypeInput  @doc(description: "Query by title.")
+    identifier  : FilterTypeInput  @doc(description: "Query by identifier.")
+    creation_time  : FilterTypeInput  @doc(description: "Query by creation_time.")
+    update_time  : FilterTypeInput  @doc(description: "Query by update_time.")
+    position  : FilterTypeInput  @doc(description: "Query by position.")
+    is_active: FilterTypeInput  @doc(description: "Is Active.")
+    or: DepartmentFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}
+
+type OrderById @doc(description: "Contains details about each of the customer's orders") {
+    id: ID! @doc(description: "Unique identifier for the order")
+    order_date: String! @doc(description: "The date the order was placed")
+    status: String! @doc(description: "The current status of the order")
+    number: String! @doc(description: "The order number")
+    items: [OrderItemInterface] @doc(description: "An array containing the items purchased in this order") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderItems")
+    invoices: [Invoice]! @doc(description: "A list of invoices for the order") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Invoices")
+    shipments: [OrderShipment] @doc(description: "A list of shipments for the order") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Shipments")
+    credit_memos: [CreditMemo] @doc(description: "A list of credit memos") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\CreditMemos")
+    payment_methods: [OrderPaymentMethod] @doc(description: "Payment details for the order")
+    shipping_address: OrderAddress @doc(description: "The shipping address for the order")
+    billing_address: OrderAddress @doc(description: "The billing address for the order")
+    carrier: String @doc(description: "The shipping carrier for the order delivery") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\CustomerOrders\\Carrier")
+    shipping_method: String @doc(description: "The delivery method for the order")
+    comments: [SalesCommentItem] @doc(description: "Comments about the order")
+    increment_id: String @deprecated(reason: "Use the id attribute instead")
+    order_number: String! @deprecated(reason: "Use the number attribute instead")
+    created_at: String @deprecated(reason: "Use the order_date attribute instead")
+    grand_total: Float  @deprecated(reason: "Use the totals.grand_total attribute instead")
+}
 
